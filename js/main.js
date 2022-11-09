@@ -9,6 +9,27 @@ const svg = d3.select('#chart-area').append('svg')
 const g = svg.append("g")
   .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
 
+// x label
+g.append("text")
+  .attr("class", "x-axis-label")
+  .attr("x", WIDTH / 2)
+  .attr("y", HEIGHT + 60)
+  .attr("font-size", "20px")
+  .attr("font-weight", "700")
+  .attr("text-anchor", "middle")
+  .text("MONTH")
+
+// y label
+g.append("text")
+  .attr("class", "y-axis-label")
+  .attr("x", - (HEIGHT / 2))
+  .attr("y", -60)
+  .attr("font-size", "20px")
+  .attr("font-weight", "700")
+  .attr("text-anchor", "middle")
+  .attr("transform", "rotate(-90)")
+  .text("REVENUE ($)")
+
 d3.csv('data/revenues.csv').then((data) => {
   data.forEach((d) => {
     d.revenue = Number(d.revenue)
