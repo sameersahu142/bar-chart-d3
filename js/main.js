@@ -37,6 +37,13 @@ d3.csv('data/revenues.csv').then((data) => {
     //   .attr("text-anchor", "end")
     //   .attr("transform", "rotate(-40)")
 
+  const yAxisCall =d3.axisLeft(y)
+    .ticks(3)
+    .tickFormat(d => d + "$")
+  g.append("g")
+    .attr("class", "y-axis")
+    .call(yAxisCall)
+
   const rect = g.selectAll('rect').data(data)
 
   rect
