@@ -25,6 +25,18 @@ d3.csv('data/revenues.csv').then((data) => {
     .domain([0, d3.max(data, d => d.revenue)])
     .range([0, HEIGHT])
 
+  const xAxisCall = d3.axisBottom(x)
+  g.append("g")
+    .attr("class", "x-axis")
+    .attr("transform", `translate(0, ${HEIGHT})`)
+    .call(xAxisCall)
+    // If wanted to ratate all x axis text
+    // .selectAll("text")
+    //   .attr("y", "10")
+    //   .attr("x", "-5")
+    //   .attr("text-anchor", "end")
+    //   .attr("transform", "rotate(-40)")
+
   const rect = g.selectAll('rect').data(data)
 
   rect
