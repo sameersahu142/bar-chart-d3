@@ -44,7 +44,7 @@ d3.csv('data/revenues.csv').then((data) => {
 
   const y = d3.scaleLinear()
     .domain([0, d3.max(data, d => d.revenue)])
-    .range([0, HEIGHT])
+    .range([HEIGHT, 0])
 
   const xAxisCall = d3.axisBottom(x)
   g.append("g")
@@ -71,8 +71,8 @@ d3.csv('data/revenues.csv').then((data) => {
     .enter()
     .append('rect')
     .attr('x', d => x(d.month))
-    .attr('y', 0)
+    .attr('y', d => y(d.revenue))
     .attr('width', x.bandwidth)
-    .attr('height', (d) => y(d.revenue))
+    .attr('height', d => HEIGHT - y(d.revenue))
     .attr('fill', '#008080')
 })
