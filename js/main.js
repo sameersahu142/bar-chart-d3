@@ -69,8 +69,20 @@ const update = (data) => {
     .tickFormat(d => d + "$")
     yAxisGroup.call(yAxisCall)
 
+  // JOIN new data with old elements.
   const rect = g.selectAll('rect').data(data)
 
+  // EXIT old elements not present in new data.
+  rect.exit().remove()
+
+  // UPDATE old elements present in new data.
+  rect
+    .attr('x', d => x(d.month))
+    .attr('y', d => y(d.revenue))
+    .attr('width', x.bandwidth)
+    .attr('height', d => HEIGHT - y(d.revenue))
+
+  // ENTER new elements present in new data. 
   rect.enter().append('rect')
     .attr('x', d => x(d.month))
     .attr('y', d => y(d.revenue))
