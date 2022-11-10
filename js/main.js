@@ -9,8 +9,10 @@ const svg = d3.select('#chart-area').append('svg')
 const g = svg.append("g")
   .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
 
+let flag = true
+
 // x label
-g.append("text")
+const xLabel = g.append("text")
   .attr("class", "x-axis-label")
   .attr("x", WIDTH / 2)
   .attr("y", HEIGHT + 60)
@@ -20,7 +22,7 @@ g.append("text")
   .text("MONTH")
 
 // y label
-g.append("text")
+const yLabel = g.append("text")
   .attr("class", "y-axis-label")
   .attr("x", - (HEIGHT / 2))
   .attr("y", -60)
@@ -28,7 +30,6 @@ g.append("text")
   .attr("font-weight", "700")
   .attr("text-anchor", "middle")
   .attr("transform", "rotate(-90)")
-  .text("REVENUE ($)")
 
 const x = d3.scaleBand()
   .range([0, WIDTH])
@@ -48,9 +49,11 @@ const yAxisGroup = g.append("g")
 d3.csv('data/revenues.csv').then((data) => {
   data.forEach((d) => {
     d.revenue = Number(d.revenue)
+    d.profit = Number(d.profit)
   })
 
     d3.interval(() => {
+      flag = !flag
       update(data)
     }, 1000)
 
@@ -58,8 +61,10 @@ d3.csv('data/revenues.csv').then((data) => {
 })
 
 const update = (data) => {
+  const value = flag ? "profit" : "revenue"
+
   x.domain(data.map(d => d.month))
-  y.domain([0, d3.max(data, d => d.revenue)])
+  y.domain([0, d3.max(data, d => d[value])])
 
   const xAxisCall = d3.axisBottom(x)
   xAxisGroup.call(xAxisCall)
@@ -78,15 +83,18 @@ const update = (data) => {
   // UPDATE old elements present in new data.
   rect
     .attr('x', d => x(d.month))
-    .attr('y', d => y(d.revenue))
+    .attr('y', d => y(d[value]))
     .attr('width', x.bandwidth)
-    .attr('height', d => HEIGHT - y(d.revenue))
+    .attr('height', d => HEIGHT - y(d[value]))
 
   // ENTER new elements present in new data. 
   rect.enter().append('rect')
     .attr('x', d => x(d.month))
-    .attr('y', d => y(d.revenue))
+    .attr('y', d => y(d[value]))
     .attr('width', x.bandwidth)
-    .attr('height', d => HEIGHT - y(d.revenue))
-    .attr('fill', '#008080')
+    .attr('height', d => HEIGHT - y(d[value]))
+    .attr('fill', '#f1c0f2')
+
+  const text = flag ? "PROFIT ($)" : "REVENUE ($)"
+  yLabel.text(text)
 }
