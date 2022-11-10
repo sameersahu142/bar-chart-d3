@@ -54,7 +54,8 @@ d3.csv('data/revenues.csv').then((data) => {
 
     d3.interval(() => {
       flag = !flag
-      update(data)
+      const newData = flag ? data : data.slice(1)
+      update(newData)
     }, 1000)
 
     update(data)
@@ -62,38 +63,42 @@ d3.csv('data/revenues.csv').then((data) => {
 
 const update = (data) => {
   const value = flag ? "profit" : "revenue"
+  const t = d3.transition().duration(750)
 
   x.domain(data.map(d => d.month))
   y.domain([0, d3.max(data, d => d[value])])
 
   const xAxisCall = d3.axisBottom(x)
-  xAxisGroup.call(xAxisCall)
+  xAxisGroup.transition(t).call(xAxisCall)
 
   const yAxisCall =d3.axisLeft(y)
     .ticks(3)
     .tickFormat(d => d + "$")
-    yAxisGroup.call(yAxisCall)
+    yAxisGroup.transition(t).call(yAxisCall)
 
   // JOIN new data with old elements.
-  const rect = g.selectAll('rect').data(data)
+  const rect = g.selectAll('rect').data(data, d => d.month)
 
   // EXIT old elements not present in new data.
-  rect.exit().remove()
-
-  // UPDATE old elements present in new data.
-  rect
-    .attr('x', d => x(d.month))
-    .attr('y', d => y(d[value]))
-    .attr('width', x.bandwidth)
-    .attr('height', d => HEIGHT - y(d[value]))
+  rect.exit()
+    .attr("fill", "red")
+    .transition(t)
+      .attr("height", 0)
+      .attr("y", y(0))
+    .remove()
 
   // ENTER new elements present in new data. 
   rect.enter().append('rect')
-    .attr('x', d => x(d.month))
-    .attr('y', d => y(d[value]))
-    .attr('width', x.bandwidth)
-    .attr('height', d => HEIGHT - y(d[value]))
     .attr('fill', '#f1c0f2')
+    .attr("height", 0)
+    .attr("y", y(0))
+    // And UPDATE old elements present in new data.
+    .merge(rect)
+    .transition(t)
+      .attr('x', d => x(d.month))
+      .attr('y', d => y(d[value]))
+      .attr('width', x.bandwidth)
+      .attr('height', d => HEIGHT - y(d[value]))
 
   const text = flag ? "PROFIT ($)" : "REVENUE ($)"
   yLabel.text(text)
