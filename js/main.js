@@ -31,11 +31,16 @@ const yLabel = g.append("text")
   .attr("text-anchor", "middle")
   .attr("transform", "rotate(-90)")
 
+// continent color
+const continentColor = d3.scaleOrdinal(d3.schemePastel1);
+
+// x scale
 const x = d3.scaleBand()
   .range([0, WIDTH])
   .paddingInner(0.3)
   .paddingOuter(0.2)
 
+  // y scale
 const y = d3.scaleLinear()
   .range([HEIGHT, 0])
 
@@ -89,7 +94,7 @@ const update = (data) => {
 
   // ENTER new elements present in new data. 
   rect.enter().append('rect')
-    .attr('fill', '#f1c0f2')
+    .attr('fill', d => continentColor(d.month))
     .attr("height", 0)
     .attr("y", y(0))
     // And UPDATE old elements present in new data.
